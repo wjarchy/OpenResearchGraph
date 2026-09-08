@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ORG_DATABASE_URL: sqlite:////app/data/openresearchgraph.db
+      ORG_ALLOWED_ORIGINS: http://localhost:8000
+    volumes:
+      - org_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  org_data:

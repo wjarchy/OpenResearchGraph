@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="OpenResearchGraph — 可追踪的六智能体深度研究系统" />
+    <title>OpenResearchGraph</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="OpenResearchGraph 首页">
+        <span class="brand-mark" aria-hidden="true">OR</span>
+        <span>OpenResearchGraph</span>
+      </a>
+      <nav>
+        <a href="#workflow">工作流</a>
+        <a href="/docs">API</a>
+        <a href="https://github.com/" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow"><span class="pulse"></span> LOCAL-FIRST · TRACEABLE</div>
+        <h1>把复杂研究，变成<br /><em>可追踪的协作过程</em></h1>
+        <p class="hero-copy">
+          六个职责清晰的 Agent 共享同一份状态，以证据、数据和批评链路共同生成研究报告。
+          默认演示模式无需 API Key。
+        </p>
+
+        <form id="research-form" class="research-box">
+          <label for="query">研究问题</label>
+          <textarea
+            id="query"
+            name="query"
+            rows="3"
+            minlength="4"
+            maxlength="8000"
+            required
+          >比较两种新能源储能路线的产业化条件、增长趋势与主要风险</textarea>
+          <div class="research-actions">
+            <span id="mode-label">确定性演示模式</span>
+            <button id="submit-button" type="submit">
+              <span>开始研究</span><span aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </form>
+        <div class="recent-bar">
+          <span>最近任务</span>
+          <div id="recent-runs"><span class="placeholder">暂无历史</span></div>
+        </div>
+      </section>
+
+      <section id="workflow" class="workspace" aria-live="polite">
+        <div class="section-heading">
+          <div>
+            <span class="kicker">WORKFLOW</span>
+            <h2>Agent 协作轨迹</h2>
+          </div>
+          <span id="run-status" class="status idle">等待任务</span>
+        </div>
+
+        <div id="agent-grid" class="agent-grid">
+          <article class="agent-card" data-role="architect"><b>01</b><h3>Architect</h3><p>问题拆解与计划</p></article>
+          <article class="agent-card" data-role="scout"><b>02</b><h3>Scout</h3><p>递归检索与质检</p></article>
+          <article class="agent-card" data-role="data_analyst"><b>03</b><h3>Data Analyst</h3><p>安全查询与统计</p></article>
+          <article class="agent-card" data-role="critic"><b>04</b><h3>Critic</h3><p>覆盖度与矛盾检查</p></article>
+          <article class="agent-card" data-role="wizard"><b>05</b><h3>Wizard</h3><p>失败修复与补救</p></article>
+          <article class="agent-card" data-role="writer"><b>06</b><h3>Writer</h3><p>证据融合与成稿</p></article>
+        </div>
+
+        <div class="output-grid">
+          <section class="panel trace-panel">
+            <div class="panel-title"><span>实时事件</span><code id="run-id">NO RUN</code></div>
+            <ol id="event-list" class="event-list">
+              <li class="placeholder">提交一个问题后，这里会显示 SSE 事件与 checkpoint。</li>
+            </ol>
+          </section>
+          <section class="panel chart-panel">
+            <div class="panel-title"><span>数据分析</span><code>SAFE SQL</code></div>
+            <canvas id="trend-chart" width="720" height="360" aria-label="趋势图"></canvas>
+            <p id="chart-note">Agent 完成数据分析后显示合成数据趋势。</p>
+          </section>
+        </div>
+
+        <section class="panel report-panel">
+          <div class="panel-title"><span>研究报告</span><button id="copy-report" disabled>复制 Markdown</button></div>
+          <article id="report" class="report">
+            <p class="placeholder">报告将在证据检查完成后出现。</p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span>OpenResearchGraph · MIT License</span>
+      <span>Human review is part of the workflow.</span>
+    </footer>
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+</html>

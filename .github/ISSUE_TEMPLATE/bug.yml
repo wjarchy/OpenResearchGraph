@@ -1,0 +1,23 @@
+name: Bug report
+description: Report a reproducible problem without including secrets or private data.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Include minimal reproduction steps and sanitized logs.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed API keys, personal data, and confidential content.
+          required: true

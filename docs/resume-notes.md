@@ -1,0 +1,23 @@
+# 项目经历口径（可由代码验证）
+
+下面这版保留项目经历中的技术内容，同时把不可公开验证的商业化表述排除在外。面试时应以你实际完成、能够现场解释的部分为准。
+
+## 多 Agent 深度研究系统
+
+### 项目描述
+
+从 0 到 1 设计并实现面向产业研究的六 Agent 协作系统。系统采用 LangGraph 编排 Architect、Scout、Data Analyst、Critic、Wizard、Writer，以统一 `ResearchState` 驱动规划、检索、分析、批评、修复和写作；通过工具工厂、双层记忆、异步队列、SSE 与 checkpoint 提供可追踪、可恢复的端到端研究流程。
+
+### 个人职责
+
+- 技术架构：设计六类 Agent 与 LangGraph 条件状态图，所有节点共享 `ResearchState`；Critic 未达标时路由至 Wizard 修复，失败任务依据 `completed_nodes` 从最近 checkpoint 续跑。
+- 工具调用：实现统一 ToolFactory，集中处理工具注册、必填参数校验、调用事件与 `SourceMetadata` 回传，供 Scout、Data Analyst、Architect 等角色调度检索、数据查询与记忆工具。
+- 搜索优化：实现 Scout 的可观察 ReAct 循环，以 Action、Observation、质量评分和 Decision 记录多轮检索；结合覆盖度、来源多样性和相关性判断是否接受结果，低质量时自动改写查询继续检索。
+- 数据分析：实现自然语言到维度计划再到 SQL 的链路，支持 sector/region/year/month 任意维度组合、sector→region 与 year→month 层级下钻、年度/月度累计或当期展示、`5-30人/月` 格式、统计指标和图表规范输出；SQL 执行受单语句、只读类型、表白名单、行数、时间与 VM 步数限制。
+- 记忆机制：实现短期会话摘要/用户偏好缓存与长期语义知识库，通过 HashEmbedding 语义相似度和词项分数融合召回；Architect 将记忆作为注册工具自主调用，研究结束后沉淀摘要。
+- 性能与稳定性：使用 asyncio Queue 解耦请求和执行，通过 SSE 推送 Agent/工具/checkpoint 事件；事件先落库再通知客户端，每个 Agent 完成后持久化状态，支持断线补读与失败续跑。
+- 质量保障：建设离线定向评测集，覆盖检索相关性、精度/召回、答案锚点准确率、引用覆盖、递归改写、角色完整性与 SQL 安全攻击集，并接入 GitHub Actions。
+
+### 说明
+
+项目中的语料与产业指标均为合成数据。离线评测结果不能表述为线上业务效果；“正式上线”“用户数”“准确率提升”等经历只有在存在真实、可披露证据时再加入。

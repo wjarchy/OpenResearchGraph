@@ -1,0 +1,4 @@
+{"case_id":"storage-routes","query":"比较新能源储能路线的产业化条件、增长趋势与主要风险","minimum_sources":2,"expected_uris":["local://demo/storage-route-overview","local://demo/long-duration-storage"],"answer_anchors":["电化学储能","长时储能"]}
+{"case_id":"evidence-method","query":"如何评价产业研究的证据质量与数据口径","minimum_sources":2,"expected_uris":["local://method/evidence-quality","local://demo/metric-definitions"],"answer_anchors":["来源多样性","installed_capacity"]}
+{"case_id":"market-analysis","query":"分析储能装机数据的变化趋势并说明限制","minimum_sources":2,"expected_uris":["local://demo/metric-definitions"],"answer_anchors":["合成演示数据","GWh"]}
+{"case_id":"retrieval-rewrite","query":"quantum_photonics","minimum_sources":2,"minimum_rounds":2,"expected_uris":["local://demo/metric-definitions"],"answer_anchors":["合成演示数据"]}
