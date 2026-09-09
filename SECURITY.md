@@ -9,3 +9,5 @@ Before deployment:
 - set explicit CORS origins;
 - isolate model and search credentials in a secret manager;
 - treat model output and retrieved documents as untrusted input.
+- place Python execution in a network-disabled container or microVM for untrusted tenants;
+- keep PostgreSQL and Milvus credentials in a secret manager, never in checkpoints.

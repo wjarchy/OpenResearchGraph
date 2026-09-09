@@ -6,6 +6,8 @@ Repository: [github.com/wjarchy/OpenResearchGraph](https://github.com/wjarchy/Op
 
 It runs without an API key by using a deterministic demo provider. See the [Chinese README](README.md) for setup, architecture and project boundaries.
 
+The committed benchmark contains 520 deterministic tasks. The current synthetic run reaches 100% retrieval relevance, 11% invalid tool calls, 100% structured-output success and 100% complex-workflow completion against gates of 74%, 11%, 80% and 82%. These are regression results, not production accuracy claims.
+
 ## Quick start
 
 ```bash

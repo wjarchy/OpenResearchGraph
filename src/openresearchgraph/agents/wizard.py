@@ -18,7 +18,7 @@ class WizardAgent(BaseAgent):
                 emit=self.emit,
             )
             result = await self.tools.invoke(
-                "search_corpus",
+                "web_search",
                 {"query": f"{state['query']} 研究证据质量 反例 口径", "limit": 6},
                 context,
             )

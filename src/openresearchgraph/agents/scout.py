@@ -55,17 +55,22 @@ class ScoutAgent(BaseAgent):
         )
 
         for round_number in range(1, self.max_rounds + 1):
-            result = await self.tools.invoke("search_corpus", {"query": query, "limit": 6}, context)
-            source_lookup = {source.source_id: source for source in result.sources}
-            for item in result.data:
-                source = source_lookup[item["source_id"]]
-                evidence = Evidence(
-                    excerpt=item["excerpt"],
-                    source=source,
-                    query=query,
-                    relevance=source.score,
-                )
-                evidence_by_id[source.source_id] = evidence.model_dump(mode="json")
+            invoked: list[str] = []
+            for tool_name in ("web_search", "search_knowledge_base"):
+                if tool_name not in self.tools.names():
+                    continue
+                result = await self.tools.invoke(tool_name, {"query": query, "limit": 6}, context)
+                invoked.append(tool_name)
+                source_lookup = {source.source_id: source for source in result.sources}
+                for item in result.data:
+                    source = source_lookup[item["source_id"]]
+                    evidence = Evidence(
+                        excerpt=item["excerpt"],
+                        source=source,
+                        query=query,
+                        relevance=source.score,
+                    )
+                    evidence_by_id[source.source_id] = evidence.model_dump(mode="json")
             current = list(evidence_by_id.values())
             score, dimensions = self._quality(current)
             decision = "accept" if score >= 0.60 else "rewrite"
@@ -73,7 +78,7 @@ class ScoutAgent(BaseAgent):
                 {
                     "round": round_number,
                     "query": query,
-                    "action": "search_corpus",
+                    "action": "+".join(invoked),
                     "observation": {"unique_sources": len(current)},
                     "quality": score,
                     "dimensions": dimensions,

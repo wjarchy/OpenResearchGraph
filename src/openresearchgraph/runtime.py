@@ -7,11 +7,18 @@ from typing import Any
 
 from .config import Settings
 from .graph import ResearchGraph
-from .memory import TwoLayerMemory
+from .memory import build_memory
 from .providers import build_provider
 from .state import AgentRole, ResearchEvent, ResearchState, RunStatus, new_research_state
 from .storage import Repository
-from .tools import LocalCorpusSearchTool, SafeSQLExecutor, ToolFactory
+from .tools import (
+    LocalCorpusSearchTool,
+    LocalKnowledgeSearchTool,
+    PythonSandboxTool,
+    SafeSQLExecutor,
+    ToolFactory,
+    WebSearchTool,
+)
 
 TERMINAL_EVENTS = {"run.completed", "run.failed"}
 
@@ -22,7 +29,7 @@ class ResearchRuntime:
     def __init__(self, settings: Settings, worker_count: int = 2) -> None:
         self.settings = settings
         self.repository = Repository(settings.database_path)
-        self.memory = TwoLayerMemory(self.repository)
+        self.memory = build_memory(settings, self.repository)
         self.queue: asyncio.Queue[str] = asyncio.Queue()
         self.worker_count = worker_count
         self._workers: list[asyncio.Task] = []
@@ -30,6 +37,11 @@ class ResearchRuntime:
 
         tools = ToolFactory()
         corpus_search = LocalCorpusSearchTool()
+        web_search = WebSearchTool(
+            base_url=settings.web_search_base_url,
+            api_key=settings.web_search_api_key,
+            fallback=corpus_search,
+        )
         safe_sql = SafeSQLExecutor(
             database_path=settings.database_path,
             allowed_tables={"industry_metrics", "industry_observations"},
@@ -37,9 +49,15 @@ class ResearchRuntime:
             timeout_seconds=settings.sql_timeout_seconds,
         )
         tools.register(
-            "search_corpus",
-            "Search the traceable local demonstration corpus",
-            corpus_search,
+            "web_search",
+            "Search the web through an environment-configured adapter or offline fallback",
+            web_search,
+            {"query"},
+        )
+        tools.register(
+            "search_knowledge_base",
+            "Search local user-provided UTF-8 knowledge files",
+            LocalKnowledgeSearchTool(settings.knowledge_path),
             {"query"},
         )
         tools.register(
@@ -53,6 +71,12 @@ class ResearchRuntime:
             "Fuse short-term session context with long-term semantic knowledge",
             self.memory.recall_tool,
             {"session_id", "query"},
+        )
+        tools.register(
+            "run_python_analysis",
+            "Validate and execute bounded pure-Python analysis and return a chart specification",
+            PythonSandboxTool(settings.python_timeout_seconds),
+            {"code", "data"},
         )
         self.tools = tools
         self.graph = ResearchGraph(

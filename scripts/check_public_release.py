@@ -26,7 +26,12 @@ FORBIDDEN_NAMES = {".env", "id_rsa", "id_ed25519"}
 
 def candidate_files() -> list[Path]:
     if (ROOT / ".git").exists():
-        output = subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True, encoding="utf-8")
+        output = subprocess.check_output(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+        )
         return [ROOT / line for line in output.splitlines() if line]
     return [
         path

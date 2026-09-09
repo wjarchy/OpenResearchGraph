@@ -102,6 +102,25 @@ class DataAnalystAgent(BaseAgent):
         result = await self.tools.invoke("query_industry_data", {"sql": sql}, context)
         columns = result.data["columns"]
         rows = result.data["rows"]
+        chart_input = self._chart_spec(plan, columns, rows)
+        value_index = columns.index("value") if "value" in columns else 0
+        generated_code = "\n".join(
+            [
+                "values = [float(row[data['value_index']]) for row in data['rows']]",
+                "result = {'mean': round(sum(values) / len(values), 4) if values else 0.0}",
+                "chart = data['chart']",
+            ]
+        )
+        python_result = await self.tools.invoke(
+            "run_python_analysis",
+            {
+                "code": generated_code,
+                "data": {"rows": rows, "value_index": value_index, "chart": chart_input},
+            },
+            context,
+        )
+        statistics = self._statistics(columns, rows)
+        statistics.update(python_result.data["result"] or {})
         analysis = AnalysisResult(
             title="合成样例中的多维装机分析",
             summary=(
@@ -111,14 +130,14 @@ class DataAnalystAgent(BaseAgent):
             sql=result.data["sql"],
             columns=columns,
             rows=rows,
-            statistics=self._statistics(columns, rows),
+            statistics=statistics,
             dimensions=list(plan.dimensions),
             drilldown_path=plan.drilldown_path,
             display_formats={
                 "period": "YYYY年 / YYYY年MM月 + 累计或当期",
                 "effort": "5-30人/月",
             },
-            chart_spec=self._chart_spec(plan, columns, rows),
+            chart_spec=python_result.data["chart"],
             sources=["local://database/industry_observations"],
         )
         state["analyses"] = [analysis.model_dump(mode="json")]

@@ -22,12 +22,15 @@
 ## 核心能力
 
 - LangGraph 状态图：所有 Agent 读写同一个 `ResearchState`，按 `Architect → Scout → Data Analyst → Critic → Wizard → Writer` 协同。
-- 工具工厂：工具注册、参数校验、统一调用和 `SourceMetadata` 回传集中管理。
-- 递归检索：Scout 对覆盖度、来源多样性和内容长度评分，低质量时改写查询并继续检索。
+- 工具工厂：统一注册 Web Search、本地文件知识库、Text-to-SQL、Python 沙箱和记忆召回，并集中完成参数校验、事件记录与 `SourceMetadata` 回传。
+- 递归检索：Scout 并行消费网络搜索与本地知识，按覆盖度、来源多样性和相关性评分；低质量时改写查询并继续检索。
 - 安全 Text-to-SQL：只允许单条 `SELECT/WITH`，限制表白名单、行数、执行时间和 SQLite VM 步数。
-- 双层记忆：短期会话摘要/偏好与长期语义知识分别存储，检索结果在进入 Agent 前融合。
+- 代码分析链：生成纯 Python 分析代码，经 AST 白名单校验后在 `-I -S` 隔离子进程中限时执行；支持 Markdown 围栏清理、末表达式捕获等有界自愈，并将统计值和图表规范回传。
+- 双层记忆：默认使用 SQLite + 本地 HashEmbedding；配置后切换到 PostgreSQL 会话记忆 + Milvus 长期语义召回，Agent 接口无需变化。
 - 异步执行：后台任务队列与 SSE 事件流解耦；每个节点自动 checkpoint，可按 `run_id` 查看和恢复。
-- 离线评测：包含搜索质量、引用覆盖、SQL 安全和流程完整性用例，可在 CI 中复跑。
+- 离线评测：提交 520 条确定性任务（200 检索、100 工具、100 结构化输出、120 复杂工作流），并在 CI 中完整复跑。
+
+当前合成回归集结果：检索相关性 `100%`（门槛 `74%`）、工具无效调用率 `11%`（上限 `11%`）、结构化输出成功率 `100%`（门槛 `80%`）、复杂任务完成率 `100%`（门槛 `82%`）。这些数字用于代码回归，不代表线上或真实行业研究准确率。
 
 ## 快速开始
 
@@ -56,6 +59,7 @@ curl -N -X POST http://localhost:8000/api/research/stream \
 ```bash
 pytest
 python scripts/run_eval.py
+python scripts/generate_benchmark.py --check
 python scripts/check_public_release.py
 ```
 
@@ -77,6 +81,15 @@ ORG_LLM_MODEL=your-model
 
 密钥只从环境变量读取，不会进入 checkpoint 或事件流。未配置时系统保留完整流程，使用确定性 Provider 便于演示和测试。
 
+Web Search 通过 `ORG_WEB_SEARCH_BASE_URL` 接入通用 GET Adapter；私有 Key 只放在 `ORG_WEB_SEARCH_API_KEY`。本地资料放入 `ORG_KNOWLEDGE_DIR`（支持 `.md/.txt/.json/.csv`）即可参与检索；默认 `data/knowledge/` 中除公开示例外均被 Git 忽略，避免误传个人文件。生产式记忆可安装 `.[memory]` 并配置：
+
+```env
+ORG_MEMORY_BACKEND=postgres_milvus
+ORG_POSTGRES_DSN=postgresql://user:password@localhost:5432/research
+ORG_MILVUS_URI=http://localhost:19530
+ORG_MILVUS_TOKEN=replace-me
+```
+
 ## 架构
 
 ```text
@@ -89,7 +102,7 @@ Web UI / API Client
        ▼          ▼          ▼        ▼        ▼         ▼
   Architect     Scout     Analyst   Critic   Wizard    Writer
                    │          │
-                   └── ToolRegistry ── web / knowledge / safe SQL
+                   └── ToolRegistry ── web / knowledge / SQL / Python
                                   │
                       Checkpoints + Two-layer Memory
 ```
@@ -98,8 +111,9 @@ Web UI / API Client
 
 ## 项目边界
 
-- 演示搜索工具只读取项目自带的合成语料；生产接入需自行实现或注册网络搜索 Adapter。
+- 未配置网络搜索时，Web Search 明确降级到项目自带的合成语料；不会伪装成真实联网结果。
 - SQL 沙箱减少误操作风险，但不能代替数据库最小权限、只读账号和网络隔离。
+- Python 子进程沙箱适合本地演示与可信代码，不是面向恶意租户的强隔离；生产环境仍应放入无网络容器或 microVM。
 - 自动生成的研究报告必须由人复核，不应用作医疗、法律或投资建议。
 
 ## 贡献与安全

@@ -14,6 +14,8 @@ htmlcov/
 Thumbs.db
 data/*.db
 data/*.db-*
+data/knowledge/*
+!data/knowledge/research-method.md
 artifacts/*
 !artifacts/.gitkeep
 frontend/node_modules/
