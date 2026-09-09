@@ -4,8 +4,8 @@ from ..state import AgentRole, Critique, ResearchState
 from .base import BaseAgent
 
 
-class CriticAgent(BaseAgent):
-    role = AgentRole.CRITIC
+class SentinelAgent(BaseAgent):
+    role = AgentRole.SENTINEL
 
     async def run(self, state: ResearchState) -> ResearchState:
         evidence = state.get("evidence", [])

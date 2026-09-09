@@ -9,12 +9,12 @@ from pydantic import BaseModel, Field
 
 
 class AgentRole(StrEnum):
-    ARCHITECT = "architect"
-    SCOUT = "scout"
-    DATA_ANALYST = "data_analyst"
-    CRITIC = "critic"
-    WIZARD = "wizard"
-    WRITER = "writer"
+    ATLAS = "atlas"
+    BEACON = "beacon"
+    PRISM = "prism"
+    SENTINEL = "sentinel"
+    FORGE = "forge"
+    SCRIBE = "scribe"
 
 
 class RunStatus(StrEnum):

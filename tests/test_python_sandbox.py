@@ -14,7 +14,7 @@ async def test_python_sandbox_returns_result_and_chart() -> None:
             "code": "values = data['values']\nresult = sum(values)\nchart = {'data': values}",
             "data": {"values": [1, 2, 3]},
         },
-        ToolContext(run_id="sandbox", role=AgentRole.DATA_ANALYST),
+        ToolContext(run_id="sandbox", role=AgentRole.PRISM),
     )
     assert result.data["result"] == 6
     assert result.data["chart"] == {"data": [1, 2, 3]}
@@ -26,7 +26,7 @@ async def test_python_sandbox_repairs_markdown_and_final_expression() -> None:
     tool = PythonSandboxTool(timeout_seconds=2)
     result = await tool(
         {"code": "```python\nsum(data)\n```", "data": [2, 4]},
-        ToolContext(run_id="sandbox-repair", role=AgentRole.DATA_ANALYST),
+        ToolContext(run_id="sandbox-repair", role=AgentRole.PRISM),
     )
     assert result.data["result"] == 6
     assert result.metadata["repaired"] is True
@@ -40,5 +40,5 @@ async def test_python_sandbox_rejects_import_and_file_access() -> None:
         with pytest.raises(SandboxError):
             await tool(
                 {"code": code, "data": {}},
-                ToolContext(run_id="sandbox-deny", role=AgentRole.DATA_ANALYST),
+                ToolContext(run_id="sandbox-deny", role=AgentRole.PRISM),
             )

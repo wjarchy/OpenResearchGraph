@@ -12,7 +12,7 @@ async def test_local_knowledge_search_tracks_file_source(tmp_path) -> None:
     tool = LocalKnowledgeSearchTool(tmp_path)
     result = await tool(
         {"query": "产业研究 来源", "limit": 3},
-        ToolContext(run_id="kb", role=AgentRole.SCOUT),
+        ToolContext(run_id="kb", role=AgentRole.BEACON),
     )
     assert result.sources[0].uri == "knowledge://notes.md"
     assert result.sources[0].attributes["local"] is True
@@ -23,7 +23,7 @@ async def test_web_search_has_explicit_offline_fallback() -> None:
     tool = WebSearchTool()
     result = await tool(
         {"query": "储能 电芯安全", "limit": 2},
-        ToolContext(run_id="web", role=AgentRole.SCOUT),
+        ToolContext(run_id="web", role=AgentRole.BEACON),
     )
     assert result.sources
     assert result.metadata == {

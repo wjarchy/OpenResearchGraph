@@ -7,8 +7,8 @@ from ..tools import ToolContext
 from .base import BaseAgent
 
 
-class ScoutAgent(BaseAgent):
-    role = AgentRole.SCOUT
+class BeaconAgent(BaseAgent):
+    role = AgentRole.BEACON
 
     def __init__(self, *args, max_rounds: int = 3, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -45,7 +45,7 @@ class ScoutAgent(BaseAgent):
         planned_queries = [
             task["question"]
             for task in plan.get("tasks", [])
-            if task.get("owner") == AgentRole.SCOUT.value
+            if task.get("owner") == AgentRole.BEACON.value
         ] or [state["query"]]
         query = " ".join(planned_queries)
         context = ToolContext(

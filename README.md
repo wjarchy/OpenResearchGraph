@@ -12,18 +12,18 @@
 
 | 角色 | 职责 | 主要产物 |
 | --- | --- | --- |
-| Architect | 拆解问题与安排执行计划 | `ResearchPlan` |
-| Scout | 递归检索、质量评分、查询改写 | `Evidence[]` |
-| Data Analyst | Text-to-SQL、统计计算、图表规范 | `AnalysisResult[]` |
-| Critic | 证据覆盖与矛盾检查 | `Critique` |
-| Wizard | 补救低质量步骤与生成补充任务 | `RepairAction[]` |
-| Writer | 合并证据、分析和批评意见 | 带引用的 Markdown 报告 |
+| Atlas | 拆解目标并规划研究路线 | `ResearchPlan` |
+| Beacon | 递归检索、质量评分、查询改写 | `Evidence[]` |
+| Prism | Text-to-SQL、统计计算、图表规范 | `AnalysisResult[]` |
+| Sentinel | 证据覆盖与矛盾审查 | `Critique` |
+| Forge | 诊断并修复低质量步骤 | `RepairAction[]` |
+| Scribe | 融合证据、分析和审查意见 | 带引用的 Markdown 报告 |
 
 ## 核心能力
 
-- LangGraph 状态图：所有 Agent 读写同一个 `ResearchState`，按 `Architect → Scout → Data Analyst → Critic → Wizard → Writer` 协同。
+- LangGraph 状态图：所有 Agent 读写同一个 `ResearchState`，按 `Atlas → Beacon → Prism → Sentinel → Forge → Scribe` 协同。
 - 工具工厂：统一注册 Web Search、本地文件知识库、Text-to-SQL、Python 沙箱和记忆召回，并集中完成参数校验、事件记录与 `SourceMetadata` 回传。
-- 递归检索：Scout 并行消费网络搜索与本地知识，按覆盖度、来源多样性和相关性评分；低质量时改写查询并继续检索。
+- 递归检索：Beacon 并行消费网络搜索与本地知识，按覆盖度、来源多样性和相关性评分；低质量时改写查询并继续检索。
 - 安全 Text-to-SQL：只允许单条 `SELECT/WITH`，限制表白名单、行数、执行时间和 SQLite VM 步数。
 - 代码分析链：生成纯 Python 分析代码，经 AST 白名单校验后在 `-I -S` 隔离子进程中限时执行；支持 Markdown 围栏清理、末表达式捕获等有界自愈，并将统计值和图表规范回传。
 - 双层记忆：默认使用 SQLite + 本地 HashEmbedding；配置后切换到 PostgreSQL 会话记忆 + Milvus 长期语义召回，Agent 接口无需变化。
@@ -100,7 +100,7 @@ Web UI / API Client
                                   │
        ┌────────────── shared ResearchState ──────────────┐
        ▼          ▼          ▼        ▼        ▼         ▼
-  Architect     Scout     Analyst   Critic   Wizard    Writer
+    Atlas      Beacon      Prism   Sentinel   Forge    Scribe
                    │          │
                    └── ToolRegistry ── web / knowledge / SQL / Python
                                   │

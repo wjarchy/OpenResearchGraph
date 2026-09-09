@@ -8,9 +8,9 @@
 | 统一 ResearchState | `state.py` | 端到端状态断言 |
 | 工具工厂与来源元数据 | `tools/base.py` | `test_tools_and_memory.py` |
 | Web Search + 本地知识库 | `tools/web_search.py`、`tools/knowledge.py` | `test_search_adapters.py` |
-| 递归检索与质量评分 | `agents/scout.py` | 离线研究用例 |
-| Text-to-SQL 与只读沙箱 | `tools/sql.py`、`agents/data_analyst.py` | `test_sql_guard.py`、安全攻击集 |
-| Python 代码校验、执行、自愈、绘图 | `tools/python_sandbox.py`、`agents/data_analyst.py` | `test_python_sandbox.py` |
+| 递归检索与质量评分 | `agents/beacon.py` | 离线研究用例 |
+| Text-to-SQL 与只读沙箱 | `tools/sql.py`、`agents/prism.py` | `test_sql_guard.py`、安全攻击集 |
+| Python 代码校验、执行、自愈、绘图 | `tools/python_sandbox.py`、`agents/prism.py` | `test_python_sandbox.py` |
 | 短期 + 长期语义记忆 | `memory.py`、`storage.py` | `test_tools_and_memory.py` |
 | PostgreSQL + Milvus 记忆后端 | `memory.py`、`.env.example` | 默认路径不加载可选依赖 |
 | asyncio 队列与 SSE | `runtime.py`、`api/app.py` | 端到端事件断言 |

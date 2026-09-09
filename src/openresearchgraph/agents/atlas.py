@@ -7,8 +7,8 @@ from ..tools import ToolContext
 from .base import BaseAgent
 
 
-class ArchitectAgent(BaseAgent):
-    role = AgentRole.ARCHITECT
+class AtlasAgent(BaseAgent):
+    role = AgentRole.ATLAS
 
     async def run(self, state: ResearchState) -> ResearchState:
         query = state["query"].strip()
@@ -25,7 +25,7 @@ class ArchitectAgent(BaseAgent):
             PlanTask(
                 task_id=f"search-{index + 1}",
                 question=question,
-                owner=AgentRole.SCOUT,
+                owner=AgentRole.BEACON,
                 success_criteria=["至少一个可定位来源", "区分事实与推断"],
             )
             for index, question in enumerate(questions)
@@ -34,7 +34,7 @@ class ArchitectAgent(BaseAgent):
             PlanTask(
                 task_id="analysis-1",
                 question=f"为“{query}”寻找可验证的数据口径并计算趋势",
-                owner=AgentRole.DATA_ANALYST,
+                owner=AgentRole.PRISM,
                 success_criteria=["SQL 只读", "说明单位和数据边界"],
             )
         )

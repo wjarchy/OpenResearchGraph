@@ -78,7 +78,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         result = await runtime.tools.invoke(
             "query_industry_data",
             {"sql": sql},
-            ToolContext(run_id="interactive-data-query", role=AgentRole.DATA_ANALYST),
+            ToolContext(run_id="interactive-data-query", role=AgentRole.PRISM),
         )
         return {
             "dimensions": list(dimensions),

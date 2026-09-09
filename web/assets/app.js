@@ -43,7 +43,7 @@ function setStatus(label, className) {
 function resetWorkspace() {
   eventList.innerHTML = "";
   currentReport = "";
-  reportElement.innerHTML = '<p class="placeholder">正在等待 Writer 汇总报告。</p>';
+  reportElement.innerHTML = '<p class="placeholder">正在等待 Scribe 汇总报告。</p>';
   copyButton.disabled = true;
   document.querySelectorAll(".agent-card").forEach((card) => card.classList.remove("active", "done"));
   clearChart();

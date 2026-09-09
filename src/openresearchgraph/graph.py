@@ -7,12 +7,12 @@ from typing import Any
 from langgraph.graph import END, START, StateGraph
 
 from .agents import (
-    ArchitectAgent,
-    CriticAgent,
-    DataAnalystAgent,
-    ScoutAgent,
-    WizardAgent,
-    WriterAgent,
+    AtlasAgent,
+    BeaconAgent,
+    ForgeAgent,
+    PrismAgent,
+    ScribeAgent,
+    SentinelAgent,
 )
 from .providers import LanguageProvider
 from .state import AgentRole, ResearchState, RunStatus
@@ -26,12 +26,12 @@ class ResearchGraph:
     """LangGraph workflow with role checkpoints and checkpoint-aware resume routing."""
 
     ORDER = (
-        AgentRole.ARCHITECT,
-        AgentRole.SCOUT,
-        AgentRole.DATA_ANALYST,
-        AgentRole.CRITIC,
-        AgentRole.WIZARD,
-        AgentRole.WRITER,
+        AgentRole.ATLAS,
+        AgentRole.BEACON,
+        AgentRole.PRISM,
+        AgentRole.SENTINEL,
+        AgentRole.FORGE,
+        AgentRole.SCRIBE,
     )
 
     def __init__(
@@ -45,12 +45,12 @@ class ResearchGraph:
         self.repository = repository
         self.emit = emit
         self.agents = {
-            AgentRole.ARCHITECT: ArchitectAgent(provider, tools),
-            AgentRole.SCOUT: ScoutAgent(provider, tools, max_rounds=max_search_rounds),
-            AgentRole.DATA_ANALYST: DataAnalystAgent(provider, tools),
-            AgentRole.CRITIC: CriticAgent(provider, tools),
-            AgentRole.WIZARD: WizardAgent(provider, tools),
-            AgentRole.WRITER: WriterAgent(provider, tools),
+            AgentRole.ATLAS: AtlasAgent(provider, tools),
+            AgentRole.BEACON: BeaconAgent(provider, tools, max_rounds=max_search_rounds),
+            AgentRole.PRISM: PrismAgent(provider, tools),
+            AgentRole.SENTINEL: SentinelAgent(provider, tools),
+            AgentRole.FORGE: ForgeAgent(provider, tools),
+            AgentRole.SCRIBE: ScribeAgent(provider, tools),
         }
         for agent in self.agents.values():
             agent.tools = tools
@@ -67,51 +67,51 @@ class ResearchGraph:
             START,
             self._resume_route,
             {
-                AgentRole.ARCHITECT.value: AgentRole.ARCHITECT.value,
-                AgentRole.SCOUT.value: AgentRole.SCOUT.value,
-                AgentRole.DATA_ANALYST.value: AgentRole.DATA_ANALYST.value,
-                AgentRole.CRITIC.value: AgentRole.CRITIC.value,
-                AgentRole.WIZARD.value: AgentRole.WIZARD.value,
-                AgentRole.WRITER.value: AgentRole.WRITER.value,
+                AgentRole.ATLAS.value: AgentRole.ATLAS.value,
+                AgentRole.BEACON.value: AgentRole.BEACON.value,
+                AgentRole.PRISM.value: AgentRole.PRISM.value,
+                AgentRole.SENTINEL.value: AgentRole.SENTINEL.value,
+                AgentRole.FORGE.value: AgentRole.FORGE.value,
+                AgentRole.SCRIBE.value: AgentRole.SCRIBE.value,
                 "done": END,
             },
         )
-        builder.add_edge(AgentRole.ARCHITECT.value, AgentRole.SCOUT.value)
-        builder.add_edge(AgentRole.SCOUT.value, AgentRole.DATA_ANALYST.value)
-        builder.add_edge(AgentRole.DATA_ANALYST.value, AgentRole.CRITIC.value)
+        builder.add_edge(AgentRole.ATLAS.value, AgentRole.BEACON.value)
+        builder.add_edge(AgentRole.BEACON.value, AgentRole.PRISM.value)
+        builder.add_edge(AgentRole.PRISM.value, AgentRole.SENTINEL.value)
         builder.add_conditional_edges(
-            AgentRole.CRITIC.value,
-            self._after_critic,
+            AgentRole.SENTINEL.value,
+            self._after_sentinel,
             {
-                AgentRole.WIZARD.value: AgentRole.WIZARD.value,
-                AgentRole.WRITER.value: AgentRole.WRITER.value,
+                AgentRole.FORGE.value: AgentRole.FORGE.value,
+                AgentRole.SCRIBE.value: AgentRole.SCRIBE.value,
             },
         )
-        builder.add_edge(AgentRole.WIZARD.value, AgentRole.WRITER.value)
-        builder.add_edge(AgentRole.WRITER.value, END)
+        builder.add_edge(AgentRole.FORGE.value, AgentRole.SCRIBE.value)
+        builder.add_edge(AgentRole.SCRIBE.value, END)
         return builder.compile()
 
     @staticmethod
-    def _after_critic(state: ResearchState) -> str:
+    def _after_sentinel(state: ResearchState) -> str:
         critique = state.get("critique") or {}
-        return AgentRole.WRITER.value if critique.get("passed") else AgentRole.WIZARD.value
+        return AgentRole.SCRIBE.value if critique.get("passed") else AgentRole.FORGE.value
 
     @classmethod
     def _resume_route(cls, state: ResearchState) -> str:
         completed = set(state.get("completed_nodes", []))
-        if AgentRole.ARCHITECT.value not in completed:
-            return AgentRole.ARCHITECT.value
-        if AgentRole.SCOUT.value not in completed:
-            return AgentRole.SCOUT.value
-        if AgentRole.DATA_ANALYST.value not in completed:
-            return AgentRole.DATA_ANALYST.value
-        if AgentRole.CRITIC.value not in completed:
-            return AgentRole.CRITIC.value
+        if AgentRole.ATLAS.value not in completed:
+            return AgentRole.ATLAS.value
+        if AgentRole.BEACON.value not in completed:
+            return AgentRole.BEACON.value
+        if AgentRole.PRISM.value not in completed:
+            return AgentRole.PRISM.value
+        if AgentRole.SENTINEL.value not in completed:
+            return AgentRole.SENTINEL.value
         critique = state.get("critique") or {}
-        if not critique.get("passed") and AgentRole.WIZARD.value not in completed:
-            return AgentRole.WIZARD.value
-        if AgentRole.WRITER.value not in completed:
-            return AgentRole.WRITER.value
+        if not critique.get("passed") and AgentRole.FORGE.value not in completed:
+            return AgentRole.FORGE.value
+        if AgentRole.SCRIBE.value not in completed:
+            return AgentRole.SCRIBE.value
         return "done"
 
     def _node(self, role: AgentRole):

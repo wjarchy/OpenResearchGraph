@@ -31,7 +31,7 @@ async def test_cumulative_sql_and_effort_format(settings) -> None:
     )
     result = await executor(
         {"sql": planner.build_sql(plan)},
-        ToolContext(run_id="analytics-test", role=AgentRole.DATA_ANALYST),
+        ToolContext(run_id="analytics-test", role=AgentRole.PRISM),
     )
 
     assert "effort" in result.data["columns"]

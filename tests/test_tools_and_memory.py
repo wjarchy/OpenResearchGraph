@@ -17,7 +17,7 @@ async def test_tool_factory_validates_and_returns_provenance() -> None:
     result = await factory.invoke(
         "search_corpus",
         {"query": "储能 产业化 数据"},
-        ToolContext(run_id="test-run", role=AgentRole.SCOUT, emit=emit),
+        ToolContext(run_id="test-run", role=AgentRole.BEACON, emit=emit),
     )
     assert result.sources
     assert all(source.content_hash for source in result.sources)

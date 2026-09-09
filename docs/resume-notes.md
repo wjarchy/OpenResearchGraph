@@ -6,15 +6,15 @@
 
 ### 项目描述
 
-从 0 到 1 设计并实现面向产业研究的六 Agent 协作系统。系统采用 LangGraph 编排 Architect、Scout、Data Analyst、Critic、Wizard、Writer，以统一 `ResearchState` 驱动规划、检索、分析、批评、修复和写作；通过工具工厂、双层记忆、异步队列、SSE 与 checkpoint 提供可追踪、可恢复的端到端研究流程。
+从 0 到 1 设计并实现面向产业研究的六 Agent 协作系统。系统采用 LangGraph 编排 Atlas、Beacon、Prism、Sentinel、Forge、Scribe，以统一 `ResearchState` 驱动规划、检索、分析、审查、修复和写作；通过工具工厂、双层记忆、异步队列、SSE 与 checkpoint 提供可追踪、可恢复的端到端研究流程。
 
 ### 个人职责
 
-- 技术架构：设计六类 Agent 与 LangGraph 条件状态图，所有节点共享 `ResearchState`；Critic 未达标时路由至 Wizard 修复，失败任务依据 `completed_nodes` 从最近 checkpoint 续跑。
+- 技术架构：设计六类 Agent 与 LangGraph 条件状态图，所有节点共享 `ResearchState`；Sentinel 未达标时路由至 Forge 修复，失败任务依据 `completed_nodes` 从最近 checkpoint 续跑。
 - 工具调用：实现统一 ToolFactory，集中处理工具注册、必填参数校验、调用事件与 `SourceMetadata` 回传，集成可配置 Web Search、本地文件知识库、Text-to-SQL、Python 沙箱和记忆召回。
-- 搜索优化：实现 Scout 的可观察 ReAct 循环，以 Action、Observation、质量评分和 Decision 记录多轮检索；结合覆盖度、来源多样性和相关性判断是否接受结果，低质量时自动改写查询继续检索。
+- 搜索优化：实现 Beacon 的可观察 ReAct 循环，以 Action、Observation、质量评分和 Decision 记录多轮检索；结合覆盖度、来源多样性和相关性判断是否接受结果，低质量时自动改写查询继续检索。
 - 数据分析：实现自然语言到维度计划再到 SQL 的链路，支持 sector/region/year/month 任意维度组合、sector→region 与 year→month 层级下钻、年度/月度累计或当期展示、`5-30人/月` 格式、统计指标和图表规范输出；生成的 Python 分析代码经 AST 校验、隔离子进程限时执行、失败自愈后回传图表。SQL 执行受单语句、只读类型、表白名单、行数、时间与 VM 步数限制。
-- 记忆机制：实现短期会话摘要/用户偏好与长期语义知识的双层召回；默认使用本地存储，生产式配置支持 PostgreSQL + Milvus。Architect 将记忆作为注册工具自主调用，研究结束后沉淀摘要。
+- 记忆机制：实现短期会话摘要/用户偏好与长期语义知识的双层召回；默认使用本地存储，生产式配置支持 PostgreSQL + Milvus。Atlas 将记忆作为注册工具自主调用，研究结束后沉淀摘要。
 - 性能与稳定性：使用 asyncio Queue 解耦请求和执行，通过 SSE 推送 Agent/工具/checkpoint 事件；事件先落库再通知客户端，每个 Agent 完成后持久化状态，支持断线补读与失败续跑。
 - 质量保障：构建 520 条可复现离线任务，覆盖检索相关性、工具调用、结构化输出和复杂工作流，并补充引用覆盖、递归改写、角色完整性与 SQL 安全攻击集；当前合成回归集达到 `100% / 11% / 100% / 100%`，分别通过 `74% / 11% / 80% / 82%` 门槛，全部接入 GitHub Actions。
 

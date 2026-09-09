@@ -5,8 +5,8 @@ from ..tools import ToolContext
 from .base import BaseAgent
 
 
-class WizardAgent(BaseAgent):
-    role = AgentRole.WIZARD
+class ForgeAgent(BaseAgent):
+    role = AgentRole.FORGE
 
     async def run(self, state: ResearchState) -> ResearchState:
         critique = state.get("critique") or {}

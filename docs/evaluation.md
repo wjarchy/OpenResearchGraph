@@ -4,7 +4,7 @@
 
 ## 指标
 
-- `retrieval_recall`：期望 URI 中被 Scout 找到的比例。
+- `retrieval_recall`：期望 URI 中被 Beacon 找到的比例。
 - `retrieval_precision`：当前结果中属于用例期望 URI 的比例，仅报告，不作为 Alpha 阻断条件。
 - `answer_accuracy`：用例定义的事实锚点在最终报告中的覆盖比例。
 - `citation_coverage`：每条进入状态的证据是否在来源列表中拥有引用编号。

@@ -4,8 +4,8 @@ from ..state import AgentRole, ResearchState
 from .base import BaseAgent
 
 
-class WriterAgent(BaseAgent):
-    role = AgentRole.WRITER
+class ScribeAgent(BaseAgent):
+    role = AgentRole.SCRIBE
 
     async def run(self, state: ResearchState) -> ResearchState:
         evidence = state.get("evidence", [])
@@ -49,7 +49,7 @@ class WriterAgent(BaseAgent):
                 "",
                 "## 质量审查",
                 "",
-                f"- Critic 得分：{critique.get('score', 0):.2f}",
+                f"- Sentinel 得分：{critique.get('score', 0):.2f}",
                 f"- 审查意见：{findings}",
                 "",
                 "## 限制",

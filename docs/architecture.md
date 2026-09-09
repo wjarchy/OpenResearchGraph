@@ -7,22 +7,22 @@ OpenResearchGraph 把研究任务视为一个可恢复的状态转换过程，�
 ## 状态图
 
 ```text
-START ── resume router ──► Architect ─► Scout ─► Data Analyst ─► Critic
+START ── resume router ──► Atlas ─► Beacon ─► Prism ─► Sentinel
                                                                   │
                                                    passed ────────┤
                                                                   ▼
-                                          failed ─► Wizard ───► Writer ─► END
+                                      failed ─► Forge ───► Scribe ─► END
 ```
 
-START 后的路由读取 `completed_nodes`。失败任务重新入队后，从第一个未完成角色继续，而不是从头执行。Critic 达标时跳过 Wizard；不达标时由 Wizard 补充检索并记录 `RepairAction`。
+START 后的路由读取 `completed_nodes`。失败任务重新入队后，从第一个未完成角色继续，而不是从头执行。Sentinel 达标时跳过 Forge；不达标时由 Forge 补充检索并记录 `RepairAction`。
 
 ## 证据链
 
-Web Search Adapter、本地文件知识库与离线合成语料都返回统一 `ToolResult`。每个来源必须带标题、URI、Provider、抓取时间、内容哈希与相关度。Agent 只能消费这套结构，Writer 则把来源编号写回报告，形成从结论到来源的可定位链路。
+Web Search Adapter、本地文件知识库与离线合成语料都返回统一 `ToolResult`。每个来源必须带标题、URI、Provider、抓取时间、内容哈希与相关度。Agent 只能消费这套结构，Scribe 则把来源编号写回报告，形成从结论到来源的可定位链路。
 
 ## Python 分析沙箱
 
-Data Analyst 将 SQL 结果与生成的分析代码交给 `PythonSandboxTool`。代码先经过 AST 白名单检查，禁止 import、文件访问、动态执行、私有属性和非白名单调用，再使用 `python -I -S` 在最小环境变量的子进程中限时执行。工具可清理 Markdown code fence、捕获末表达式后重试，并以 JSON 返回统计结果和 chart spec。此边界是本地防御纵深；恶意多租户部署仍需容器或 microVM。
+Prism 将 SQL 结果与生成的分析代码交给 `PythonSandboxTool`。代码先经过 AST 白名单检查，禁止 import、文件访问、动态执行、私有属性和非白名单调用，再使用 `python -I -S` 在最小环境变量的子进程中限时执行。工具可清理 Markdown code fence、捕获末表达式后重试，并以 JSON 返回统计结果和 chart spec。此边界是本地防御纵深；恶意多租户部署仍需容器或 microVM。
 
 ## Text-to-SQL 安全边界
 

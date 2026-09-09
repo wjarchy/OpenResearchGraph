@@ -42,11 +42,11 @@ async def evaluate_research_cases(cases: list[dict[str, Any]], database_path: Pa
             )
             source_references = report.count("- [S")
             required_roles = {
-                AgentRole.ARCHITECT.value,
-                AgentRole.SCOUT.value,
-                AgentRole.DATA_ANALYST.value,
-                AgentRole.CRITIC.value,
-                AgentRole.WRITER.value,
+                AgentRole.ATLAS.value,
+                AgentRole.BEACON.value,
+                AgentRole.PRISM.value,
+                AgentRole.SENTINEL.value,
+                AgentRole.SCRIBE.value,
             }
             checks = {
                 "completed": final.get("status") == RunStatus.COMPLETED,
@@ -67,7 +67,7 @@ async def evaluate_research_cases(cases: list[dict[str, Any]], database_path: Pa
                     "checks": checks,
                     "source_count": evidence_count,
                     "search_rounds": len(final.get("search_rounds", [])),
-                    "critic_score": (final.get("critique") or {}).get("score", 0),
+                    "sentinel_score": (final.get("critique") or {}).get("score", 0),
                     "retrieval_precision": round(retrieval_precision, 3),
                     "retrieval_recall": round(retrieval_recall, 3),
                     "answer_accuracy": round(answer_accuracy, 3),
@@ -113,7 +113,7 @@ async def evaluate_benchmark(cases: list[dict[str, Any]], database_path: Path) -
     for case in retrieval_cases:
         result = await retrieval_tool(
             {"query": case["query"], "limit": 1},
-            ToolContext(run_id=case["case_id"], role=AgentRole.SCOUT),
+            ToolContext(run_id=case["case_id"], role=AgentRole.BEACON),
         )
         top_uri = result.sources[0].uri if result.sources else None
         retrieval_matches += top_uri == case["expected_uri"]
@@ -132,7 +132,7 @@ async def evaluate_benchmark(cases: list[dict[str, Any]], database_path: Path) -
             await factory.invoke(
                 case["tool"],
                 case["arguments"],
-                ToolContext(run_id=case["case_id"], role=AgentRole.ARCHITECT),
+                ToolContext(run_id=case["case_id"], role=AgentRole.ATLAS),
             )
         except (KeyError, ValueError, TypeError):
             accepted = False
@@ -177,11 +177,11 @@ async def evaluate_benchmark(cases: list[dict[str, Any]], database_path: Path) -
     finally:
         await runtime.stop()
     required_roles = {
-        AgentRole.ARCHITECT.value,
-        AgentRole.SCOUT.value,
-        AgentRole.DATA_ANALYST.value,
-        AgentRole.CRITIC.value,
-        AgentRole.WRITER.value,
+        AgentRole.ATLAS.value,
+        AgentRole.BEACON.value,
+        AgentRole.PRISM.value,
+        AgentRole.SENTINEL.value,
+        AgentRole.SCRIBE.value,
     }
     complex_completed = sum(
         state.get("status") == RunStatus.COMPLETED

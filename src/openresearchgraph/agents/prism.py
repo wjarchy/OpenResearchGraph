@@ -9,8 +9,8 @@ from ..tools import ToolContext
 from .base import BaseAgent
 
 
-class DataAnalystAgent(BaseAgent):
-    role = AgentRole.DATA_ANALYST
+class PrismAgent(BaseAgent):
+    role = AgentRole.PRISM
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
