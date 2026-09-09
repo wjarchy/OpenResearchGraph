@@ -9,6 +9,7 @@ description = "Traceable six-agent deep-research workflow built with LangGraph"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
+authors = [{ name = "wjarchy" }]
 keywords = ["agents", "deep-research", "langgraph", "rag", "text-to-sql"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -24,6 +25,11 @@ dependencies = [
   "pydantic-settings>=2.2,<3",
   "uvicorn[standard]>=0.30,<1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/wjarchy/OpenResearchGraph"
+Repository = "https://github.com/wjarchy/OpenResearchGraph"
+Issues = "https://github.com/wjarchy/OpenResearchGraph/issues"
 
 [project.optional-dependencies]
 dev = [

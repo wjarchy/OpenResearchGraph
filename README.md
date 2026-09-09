@@ -2,6 +2,8 @@
 
 一个面向产业研究与数据问答的、可追踪的六智能体深度研究系统。项目强调三件事：研究过程可恢复、引用来源可追溯、数据查询默认安全。
 
+项目地址：[github.com/wjarchy/OpenResearchGraph](https://github.com/wjarchy/OpenResearchGraph)
+
 > 当前版本是可运行的 Alpha。默认使用本地确定性 Provider，首次启动不需要 API Key；配置 OpenAI-compatible 模型后可切换为真实大模型推理。
 
 ## 为什么做它
